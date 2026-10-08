@@ -25,7 +25,32 @@ export class A320Systems {
 
   toggle(k) { if(k in this.state) this.state[k]=!this.state[k]; }
   set(k,v) { if(k in this.state && Number.isFinite(v)) this.state[k]=v; }
-  clamp(v,a,b) { return Math.max(a,Math.min(b,v)); }
+
+  addWaypoint(ident,lat=null,lon=null,alt=7000) {
+    const clean=String(ident||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+    if(!clean)return false;
+    const last=this.flightPlan[this.flightPlan.length-1] || {lat:this.state.lat,lon:this.state.lon};
+    const index=this.flightPlan.length;
+    const bearing=(this.state.heading+index*18)*Math.PI/180;
+    const distance=.10;
+    const fallbackLat=last.lat+Math.cos(bearing)*distance;
+    const fallbackLon=last.lon+Math.sin(bearing)*distance/Math.max(.2,Math.cos(last.lat*Math.PI/180));
+    this.flightPlan.push({
+      ident:clean,
+      lat:Number.isFinite(lat)?lat:fallbackLat,
+      lon:Number.isFinite(lon)?lon:fallbackLon,
+      alt:Number.isFinite(alt)?alt:7000
+    });
+    if(this.activeWaypoint>=this.flightPlan.length)this.activeWaypoint=this.flightPlan.length-1;
+    return true;
+  }
+
+  directTo(ident) {
+    const clean=String(ident||'').trim().toUpperCase();
+    const index=this.flightPlan.findIndex(w=>w.ident===clean);
+    if(index>=0){this.activeWaypoint=index;return true;}
+    return this.addWaypoint(clean), this.activeWaypoint=this.flightPlan.length-1, true;
+  }
 
   update(dt) {
     const s=this.state;
@@ -34,7 +59,6 @@ export class A320Systems {
     const targetSpeed=s.athr ? s.selSpd : 105+thrust*205;
     const speedResponse=.55+(power*.35);
 
-    // Energy model: thrust, drag, flap/gear configuration and altitude.
     const drag=.00075*s.ias*s.ias + s.flaps*2.2 + (s.gearDown?18:0);
     const accel=((thrust*150)-drag)*.018;
     s.ias += (targetSpeed-s.ias)*this.clamp(dt*speedResponse,0,1) + accel*dt;
@@ -73,8 +97,6 @@ export class A320Systems {
 
     if(s.gearDown) s.vs-=Math.max(0,(s.ias-170)*.018);
 
-    // Simple FMC-style position integration. This gives the ND/MCDU a real
-    // moving aircraft position without requiring an external navigation service.
     const nmPerSec=s.gs/3600;
     const rad=s.track*Math.PI/180;
     const dNorth=Math.cos(rad)*nmPerSec*dt;
@@ -99,4 +121,6 @@ export class A320Systems {
       s.locDeviation=0;s.gsDeviation=0;
     }
   }
+
+  clamp(v,a,b) { return Math.max(a,Math.min(b,v)); }
 }
