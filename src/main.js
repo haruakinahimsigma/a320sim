@@ -36,6 +36,7 @@ const fill=new THREE.DirectionalLight(0xb9dcff,1.0);fill.position.set(4,4,1);sce
 
 const instruments=new Instruments();
 const cockpit=buildCockpit(scene,instruments);
+const world={terrain:0,traffic:[]};
 const ray=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 let looking=false,lx=0,ly=0,drag=null;
@@ -71,6 +72,7 @@ function action(name){
   else if(name==='ENG1'||name==='ENG2')systems.set(name.toLowerCase(),1);
   else if(name==='HYD'){systems.toggle('hydGreen');systems.toggle('hydBlue');systems.toggle('hydYellow');}
   else if(name==='BEACON')systems.toggle('beacon');else if(name==='STROBE')systems.toggle('strobe');
+  else if(name==='ILS')systems.toggle('ils');
 }
 function mcduKey(a){
   const p=a.split('_'),r=Number(p[1]),c=Number(p[2]);
@@ -130,7 +132,8 @@ function frame(now){
   camera.rotation.y=THREE.MathUtils.lerp(camera.rotation.y,lookYaw,1-Math.pow(.001,dt));
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,lookPitch,1-Math.pow(.001,dt));
   const s=systems.state;
-  hud.innerHTML='<b>A320neo</b><br>VIEW '+viewName+' • IAS '+Math.round(s.ias)+' KT • M'+s.mach.toFixed(2)+'<br>ALT '+Math.round(s.alt)+' FT • VS '+Math.round(s.vs)+' FPM<br>HDG '+String(Math.round(s.heading)%360).padStart(3,'0')+' • FLAPS '+s.flaps+'<br>AP1 '+(s.ap1?'ON':'OFF')+' • A/THR '+(s.athr?'ON':'OFF')+' • ELEC '+(s.elec?'AVAIL':'OFF');
+  const wp=s.nav1?(' • '+s.nav1.ident+' '+s.nav1.distance.toFixed(1)+'NM'):'';
+  hud.innerHTML='<b>A320neo</b><br>VIEW '+viewName+' • IAS '+Math.round(s.ias)+' KT • M'+s.mach.toFixed(2)+'<br>ALT '+Math.round(s.alt)+' FT • VS '+Math.round(s.vs)+' FPM<br>HDG '+String(Math.round(s.heading)%360).padStart(3,'0')+' • GS '+Math.round(s.gs)+' KT'+wp+'<br>AP1 '+(s.ap1?'ON':'OFF')+' • A/THR '+(s.athr?'ON':'OFF')+' • ELEC '+(s.elec?'AVAIL':'OFF');
   renderer.render(scene,camera);
 }
 requestAnimationFrame(frame);
