@@ -6,7 +6,7 @@ import {MCDU} from './mcdu.js';
 const MODEL_URL=`${import.meta.env.BASE_URL}Panel_A320_3D_2023.glb`;
 const MODEL_SCALE=0.001;
 const MODEL_ROTATION_X=-Math.PI/2;
-const MODEL_POSITION=new THREE.Vector3(0.663,0.108,4.90);
+const MODEL_POSITION=new THREE.Vector3(0.663,0.108,-0.55);
 const DIAGNOSTIC_GRAY=new THREE.MeshStandardMaterial({color:0x62666b,roughness:.82,metalness:.08});
 
 const DISPLAY_POSITIONS={
