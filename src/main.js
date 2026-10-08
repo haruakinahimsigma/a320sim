@@ -12,14 +12,15 @@ scene.fog=new THREE.Fog(0x8fc5e8,12,42);
 const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.72,1.61,.73),
-  CENTER:new THREE.Vector3(0,1.61,.73),
-  FO:new THREE.Vector3(.72,1.61,.73)
+  // Calibrated around the supplied A320 CAD cockpit in meters.
+  CAPTAIN:new THREE.Vector3(-.56,1.57,-.24),
+  CENTER:new THREE.Vector3(0,1.57,-.24),
+  FO:new THREE.Vector3(.56,1.57,-.24)
 };
 let viewName='CAPTAIN';
 let targetPos=cameraViews.CAPTAIN.clone();
 camera.position.copy(targetPos);
-camera.rotation.set(-.035,Math.PI,0);
+camera.rotation.set(-.035,0,0);
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
@@ -38,11 +39,11 @@ const cockpit=buildCockpit(scene,instruments);
 const ray=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 let looking=false,lx=0,ly=0,drag=null;
-let lookYaw=Math.PI,lookPitch=-.035;
+let lookYaw=0,lookPitch=-.035;
 
 function setView(name){
   viewName=name;targetPos.copy(cameraViews[name]);
-  lookYaw=Math.PI;
+  lookYaw=0;
   lookPitch=-.035;
   camera.rotation.y=lookYaw;
   camera.rotation.x=lookPitch;
