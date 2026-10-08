@@ -14,9 +14,9 @@ scene.fog=new THREE.Fog(0x2487d8,12,42);
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.48,1.53,-.02),
-  CENTER:new THREE.Vector3(0,1.53,-.02),
-  FO:new THREE.Vector3(.48,1.53,-.02)
+  CAPTAIN:new THREE.Vector3(-.48,1.53,-1.05),
+  CENTER:new THREE.Vector3(0,1.53,-1.05),
+  FO:new THREE.Vector3(.48,1.53,-1.05)
 };
 let viewName='CAPTAIN';
 let targetPos=cameraViews.CAPTAIN.clone();
@@ -46,11 +46,11 @@ cockpit.mcdu.onCommand=command=>{
 const ray=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 let looking=false,lx=0,ly=0,drag=null;
-let lookYaw=0,lookPitch=-.025;
+let lookYaw=0,lookPitch=-.06;
 
 function setView(name){
   viewName=name;targetPos.copy(cameraViews[name]);
-  lookYaw=0; lookPitch=-.025;
+  lookYaw=0; lookPitch=-.06;
   camera.rotation.y=lookYaw; camera.rotation.x=lookPitch;
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
 }
