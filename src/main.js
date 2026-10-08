@@ -14,9 +14,9 @@ scene.fog=new THREE.Fog(0x2487d8,12,42);
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.48,1.53,-1.05),
-  CENTER:new THREE.Vector3(0,1.53,-1.05),
-  FO:new THREE.Vector3(.48,1.53,-1.05)
+  CAPTAIN:new THREE.Vector3(-.48,1.53,-1.55),
+  CENTER:new THREE.Vector3(0,1.53,-1.55),
+  FO:new THREE.Vector3(.48,1.53,-1.55)
 };
 let viewName='CAPTAIN';
 let targetPos=cameraViews.CAPTAIN.clone();
