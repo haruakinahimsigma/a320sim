@@ -1,37 +1,9 @@
 import * as THREE from 'three';
 export class Instruments{
-  constructor(){this.displays=[];['PFD','ND','ECAM1','ECAM2'].forEach(n=>this.make(n))}
-  make(name){const c=document.createElement('canvas');c.width=720;c.height=540;const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(.82,.615),new THREE.MeshBasicMaterial({map:tex}));this.displays.push({name,c,tex,mesh})}
-  mount(i,parent,p){const d=this.displays[i];d.mesh.position.set(...p);d.mesh.rotation.x=-.06;parent.add(d.mesh)}
-  txt(g,t,x,y,size,color='#dce7eb',align='left'){g.fillStyle=color;g.font=`${size}px ui-monospace,monospace`;g.textAlign=align;g.fillText(t,x,y)}
-  line(g,x1,y1,x2,y2,color='#5ee7ff',w=3){g.strokeStyle=color;g.lineWidth=w;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke()}
-  draw(d,s){
-    const g=d.c.getContext('2d');g.fillStyle='#02070b';g.fillRect(0,0,720,540);g.strokeStyle='#182f36';g.lineWidth=5;g.strokeRect(4,4,712,532);
-    if(d.name==='PFD'){
-      g.fillStyle='#176f91';g.fillRect(0,0,720,270);g.fillStyle='#573b29';g.fillRect(0,270,720,270);
-      g.strokeStyle='#fff';g.lineWidth=3;g.beginPath();g.moveTo(270,270);g.lineTo(450,270);g.stroke();
-      this.txt(g,`${Math.round(s.ias)}`,42,108,60,'#fff');this.txt(g,'SPEED',44,138,17,'#8be9fd');
-      this.txt(g,`${Math.round(s.alt)}`,565,108,54,'#fff','right');this.txt(g,'ALT',566,138,17,'#8be9fd','right');
-      this.txt(g,`HDG ${String(Math.round(s.heading)%360).padStart(3,'0')}`,360,505,24,'#fff','center');
-      this.txt(g,`VS ${Math.round(s.vs)}`,360,470,19,s.vs>=0?'#65e69b':'#ff9b66','center');
-      this.txt(g,s.ap1?'AP1':'—',360,44,24,s.ap1?'#65e69b':'#ffbd55','center');
-      this.txt(g,s.fd?'FD':'',360,72,19,'#65e69b','center');
-      this.line(g,325,270,395,270,'#fff',5);this.line(g,350,250,370,250,'#fff',3);
-      for(let i=-2;i<=2;i++)this.line(g,315+i*28,270-i*32,405+i*28,270-i*32,'#e8eef0',2);
-    }else if(d.name==='ND'){
-      this.txt(g,s.navMode,30,38,24,'#65e69b');this.txt(g,String(Math.round(s.heading)%360).padStart(3,'0'),360,60,28,'#fff','center');
-      g.strokeStyle='#38c9ee';g.lineWidth=4;g.beginPath();g.arc(360,280,190,0,Math.PI*2);g.stroke();
-      g.strokeStyle='#244954';g.lineWidth=2;for(let a=0;a<360;a+=30){const r1=170,r2=190,rad=(a-90)*Math.PI/180;this.line(g,360+Math.cos(rad)*r1,280+Math.sin(rad)*r1,360+Math.cos(rad)*r2,280+Math.sin(rad)*r2,'#244954',2)}
-      this.txt(g,'▲',360,290,58,'#53d9ff','center');this.txt(g,'TO WPT',360,330,18,'#53d9ff','center');this.txt(g,`GS ${Math.round(s.ias)}`,35,505,18);this.txt(g,`M ${s.mach.toFixed(2)}`,685,505,18,'#dce7eb','right');
-    }else{
-      this.txt(g,d.name,26,38,24,'#65e69b');this.txt(g,s.elec?'ELEC NORMAL':'ELEC OFF',26,84,22,s.elec?'#65e69b':'#ff5555');
-      this.txt(g,`ENG 1  ${Math.round(s.eng1*100)}%`,26,132,21);this.txt(g,`ENG 2  ${Math.round(s.eng2*100)}%`,26,170,21);
-      this.txt(g,s.gearDown?'GEAR DOWN':'GEAR UP',26,218,21,s.gearDown?'#65e69b':'#ffbd55');this.txt(g,`FLAPS ${s.flaps}`,26,258,21);
-      this.txt(g,s.athr?'A/THR ACTIVE':'A/THR OFF',26,298,21,s.athr?'#65e69b':'#ffbd55');
-      this.txt(g,s.hydGreen?'HYD G':'HYD G OFF',26,338,20,s.hydGreen?'#65e69b':'#ff5555');this.txt(g,s.hydBlue?'HYD B':'HYD B OFF',26,374,20,s.hydBlue?'#65e69b':'#ff5555');this.txt(g,s.hydYellow?'HYD Y':'HYD Y OFF',26,410,20,s.hydYellow?'#65e69b':'#ff5555');
-      this.txt(g,`FUEL ${Math.round(s.fuel)}%`,26,466,20,'#8be9fd');
-    }
-    d.tex.needsUpdate=true;
-  }
-  update(s){this.displays.forEach(d=>this.draw(d,s))}
+ constructor(){this.displays=[];['PFD','ND','ECAM1','ECAM2'].forEach(n=>this.make(n));}
+ make(name){const c=document.createElement('canvas');c.width=800;c.height=600;const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(.87,.65),new THREE.MeshBasicMaterial({map:tex}));this.displays.push({name,c,tex,mesh});}
+ mount(i,parent,p){const d=this.displays[i];d.mesh.position.set(...p);d.mesh.rotation.x=-.08;parent.add(d.mesh);}
+ txt(g,t,x,y,z=22,col='#e9f1f3',a='left'){g.fillStyle=col;g.font=z+'px monospace';g.textAlign=a;g.fillText(t,x,y);}
+ line(g,a,b,c,d,col='#e9f1f3',w=3){g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke();}
+ update(s){for(const d of this.displays){const g=d.c.getContext('2d');g.fillStyle='#02070b';g.fillRect(0,0,800,600);if(d.name==='PFD'){g.fillStyle='#14708d';g.fillRect(0,0,800,300);g.fillStyle='#62462e';g.fillRect(0,300,800,300);this.txt(g,Math.round(s.ias),48,105,58);this.txt(g,'SPD',50,135,18,'#7be9ff');this.txt(g,Math.round(s.alt),750,105,54,'#fff','right');this.txt(g,'ALT',750,135,18,'#7be9ff','right');const pitch=s.pitch*12;this.line(g,250,300-pitch,550,300-pitch,'#fff',4);this.line(g,370,300,430,300,'#fff',5);this.txt(g,'HDG '+String(Math.round(s.heading)%360).padStart(3,'0'),400,555,25,'#fff','center');this.txt(g,'VS '+Math.round(s.vs),400,520,20,s.vs>=0?'#65e69b':'#ff9870','center');this.txt(g,s.ap1?'AP1':'',400,42,23,s.ap1?'#65e69b':'#ffbd55','center');this.txt(g,s.fd?'FD':'',400,70,19,'#65e69b','center');this.line(g,385,300,415,300,'#ffdc55',3);}else if(d.name==='ND'){this.txt(g,'ROSE',25,35,24,'#65e69b');this.txt(g,String(Math.round(s.heading)%360).padStart(3,'0'),400,55,28,'#fff','center');g.strokeStyle='#27c8ec';g.lineWidth=4;g.beginPath();g.arc(400,310,220,0,Math.PI*2);g.stroke();for(let a=0;a<360;a+=30){const r=a*Math.PI/180;this.line(g,400+Math.sin(r)*205,310-Math.cos(r)*205,400+Math.sin(r)*220,310-Math.cos(r)*220,'#28434a',2);}this.txt(g,'▲',400,320,58,'#55ddff','center');this.txt(g,'WPT',400,360,18,'#55ddff','center');this.txt(g,'GS '+Math.round(s.ias),25,565,18);this.txt(g,'M '+s.mach.toFixed(2),775,565,18,'#fff','right');}else{this.txt(g,d.name,24,34,24,'#65e69b');this.txt(g,s.elec?'ELEC NORMAL':'ELEC OFF',24,75,21,s.elec?'#65e69b':'#ff4e4e');this.txt(g,'ENG 1 '+Math.round(s.eng1*100)+'%',24,125,20);this.txt(g,'ENG 2 '+Math.round(s.eng2*100)+'%',24,160,20);this.txt(g,s.gearDown?'GEAR DOWN':'GEAR UP',24,210,20,s.gearDown?'#65e69b':'#ffbd55');this.txt(g,'FLAPS '+s.flaps,24,245,20);this.txt(g,s.athr?'A/THR ACTIVE':'A/THR OFF',24,280,20,s.athr?'#65e69b':'#ffbd55');this.txt(g,'HYD G '+(s.hydGreen?'PRESS':'OFF'),24,330,18,s.hydGreen?'#65e69b':'#ff5555');this.txt(g,'HYD B '+(s.hydBlue?'PRESS':'OFF'),24,365,18,s.hydBlue?'#65e69b':'#ff5555');this.txt(g,'HYD Y '+(s.hydYellow?'PRESS':'OFF'),24,400,18,s.hydYellow?'#65e69b':'#ff5555');this.txt(g,'FUEL '+s.fuel.toFixed(1)+'%',24,455,19,'#7be9ff');}d.tex.needsUpdate=true;}}
 }
