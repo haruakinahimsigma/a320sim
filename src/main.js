@@ -12,7 +12,6 @@ scene.fog=new THREE.Fog(0x8fc5e8,12,42);
 const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  // Calibrated around the supplied A320 CAD cockpit in meters.
   CAPTAIN:new THREE.Vector3(-.56,1.57,-.24),
   CENTER:new THREE.Vector3(0,1.57,-.24),
   FO:new THREE.Vector3(.56,1.57,-.24)
@@ -36,7 +35,12 @@ const fill=new THREE.DirectionalLight(0xb9dcff,1.0);fill.position.set(4,4,1);sce
 
 const instruments=new Instruments();
 const cockpit=buildCockpit(scene,instruments);
-const world={terrain:0,traffic:[]};
+
+cockpit.mcdu.onCommand=command=>{
+  if(command.type==='DIRECT_TO') systems.directTo(command.ident);
+  else if(command.type==='ADD_WAYPOINT') systems.addWaypoint(command.ident);
+};
+
 const ray=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 let looking=false,lx=0,ly=0,drag=null;
@@ -44,10 +48,8 @@ let lookYaw=0,lookPitch=-.035;
 
 function setView(name){
   viewName=name;targetPos.copy(cameraViews[name]);
-  lookYaw=0;
-  lookPitch=-.035;
-  camera.rotation.y=lookYaw;
-  camera.rotation.x=lookPitch;
+  lookYaw=0; lookPitch=-.035;
+  camera.rotation.y=lookYaw; camera.rotation.x=lookPitch;
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
 }
 function hit(e){
@@ -76,7 +78,7 @@ function action(name){
 }
 function mcduKey(a){
   const p=a.split('_'),r=Number(p[1]),c=Number(p[2]);
-  const keys=[['DIR','PROG','PERF','INIT','DATA','F-PLN'],['1','2','3','4','5','6'],['7','8','9','0','.','/'],['A','B','C','D','E','F'],['G','H','I','J','K','L'],['M','N','O','P','Q','R'],['S','T','U','V','W','X'],['Y','Z','SP','CLR','DEL','EXEC']];
+  const keys=cockpit.mcdu.keys;
   cockpit.mcdu.key(keys[r]?.[c]||'CLR');
 }
 function applyDrag(o,v){
@@ -127,7 +129,7 @@ let last=performance.now();
 function frame(now){
   requestAnimationFrame(frame);
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  systems.update(dt);cockpit.controls.animate();instruments.update(systems.state);cockpit.mcdu.draw();
+  systems.update(dt);cockpit.controls.animate();instruments.update(systems.state);cockpit.mcdu.draw(systems.state);
   camera.position.lerp(targetPos,1-Math.pow(.001,dt));
   camera.rotation.y=THREE.MathUtils.lerp(camera.rotation.y,lookYaw,1-Math.pow(.001,dt));
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,lookPitch,1-Math.pow(.001,dt));
