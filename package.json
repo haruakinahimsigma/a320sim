@@ -1,1 +1,1 @@
-{"name":"a320sim","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"vite","build":"vite build","preview":"vite preview"},"devDependencies":{"vite":"latest"}}
+{"name":"a320sim","private":true,"version":"0.2.0","type":"module","scripts":{"dev":"vite","build":"vite build","preview":"vite preview"},"dependencies":{"three":"^0.180.0"},"devDependencies":{"vite":"latest"}}
