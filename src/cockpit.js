@@ -3,7 +3,7 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {CockpitControls} from './controls.js';
 import {MCDU} from './mcdu.js';
 
-const MODEL_URL='/models/Panel_A320_3D_2023.glb';
+const MODEL_URL='/Panel_A320_3D_2023.glb';
 
 // CAD export calibration.
 // The supplied CAD uses Z-up with the aircraft longitudinal axis on +Y.
