@@ -52,6 +52,7 @@ renderer.domElement.addEventListener('pointerdown',e=>{
     else if(a.startsWith('FLAPS_'))systems.set('flaps',Number(a.split('_')[1]));
     else if(a==='THROTTLE'){systems.set('throttle1',Math.min(1,s.throttle1+.05));systems.set('throttle2',Math.min(1,s.throttle2+.05));systems.set('athr',false)}
     else if(a==='BAT'||a==='ELEC')systems.toggle('elec');
+    else if(a.startsWith('MCDU_KEY_')){const parts=a.split('_');const r=Number(parts[2]),c=Number(parts[3]);const keys=[['FPLN','DIR','PERF'],['A','B','C'],['D','E','F'],['CLR','MENU','1']];cockpit.mcdu.key(keys[r]?.[c]||'1');cockpit.mcdu.draw();}
   }
   looking=true;lx=e.clientX;ly=e.clientY;
 });
@@ -65,7 +66,7 @@ const hint=document.createElement('div');hint.id='hint';hint.innerHTML='<b>A320n
 let last=performance.now();
 function frame(now){
   requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;
-  systems.update(dt);cockpit.controls.animate();instruments.update(systems.state);
+  systems.update(dt);cockpit.controls.animate();instruments.update(systems.state);cockpit.mcdu.draw();
   const s=systems.state;
   hud.innerHTML=`<b>A320neo</b><br>IAS ${Math.round(s.ias)} • M${s.mach.toFixed(2)}<br>ALT ${Math.round(s.alt)} • VS ${Math.round(s.vs)}<br>HDG ${String(Math.round(s.heading)%360).padStart(3,'0')} • FLAPS ${s.flaps}<br>AP1 ${s.ap1?'ON':'OFF'} • A/THR ${s.athr?'ON':'OFF'} • ELEC ${s.elec?'AVAIL':'OFF'}`;
   renderer.render(scene,camera);
