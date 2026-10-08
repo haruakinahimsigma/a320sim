@@ -9,17 +9,19 @@ const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x8fc5e8);
 scene.fog=new THREE.Fog(0x8fc5e8,12,42);
 
-const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.03,80);
+// Wider, slightly pulled-back flight-deck camera.
+// Three.js PerspectiveCamera FOV is the vertical field of view.
+const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.56,1.57,-.24),
-  CENTER:new THREE.Vector3(0,1.57,-.24),
-  FO:new THREE.Vector3(.56,1.57,-.24)
+  CAPTAIN:new THREE.Vector3(-.48,1.53,-.02),
+  CENTER:new THREE.Vector3(0,1.53,-.02),
+  FO:new THREE.Vector3(.48,1.53,-.02)
 };
 let viewName='CAPTAIN';
 let targetPos=cameraViews.CAPTAIN.clone();
 camera.position.copy(targetPos);
-camera.rotation.set(-.035,0,0);
+camera.rotation.set(-.025,0,0);
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
@@ -44,11 +46,11 @@ cockpit.mcdu.onCommand=command=>{
 const ray=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 let looking=false,lx=0,ly=0,drag=null;
-let lookYaw=0,lookPitch=-.035;
+let lookYaw=0,lookPitch=-.025;
 
 function setView(name){
   viewName=name;targetPos.copy(cameraViews[name]);
-  lookYaw=0; lookPitch=-.035;
+  lookYaw=0; lookPitch=-.025;
   camera.rotation.y=lookYaw; camera.rotation.x=lookPitch;
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
 }
@@ -69,7 +71,7 @@ function action(name){
   else if(name==='VS')systems.set('selVs',s.selVs>=5500?-6000:s.selVs+500);
   else if(name==='GEAR')systems.toggle('gearDown');else if(name==='PARK_BRAKE')systems.toggle('parkBrake');
   else if(name.startsWith('FLAP_'))systems.set('flaps',name==='FLAP_4'?4:Number(name.slice(5)));
-  else if(name==='THROTTLE'){systems.set('throttle1',Math.min(1,s.throttle1+.05));systems.set('throttle2',Math.min(1,s.throttle2+.05));systems.set('athr',false);}
+  else if(name==='THROTTLE'){systems.set('throttle1',Math.min(1,s.throttle1+.05));systems.set('throttle2',Math.min(1,s.throttle2+.05);systems.set('athr',false);}
   else if(name==='BAT'||name==='ELEC')systems.toggle('elec');else if(name==='APU')systems.set('apu',1);
   else if(name==='ENG1'||name==='ENG2')systems.set(name.toLowerCase(),1);
   else if(name==='HYD'){systems.toggle('hydGreen');systems.toggle('hydBlue');systems.toggle('hydYellow');}
@@ -110,7 +112,7 @@ renderer.domElement.addEventListener('pointerdown',down);
 renderer.domElement.addEventListener('pointermove',move);
 renderer.domElement.addEventListener('pointerup',up);
 renderer.domElement.addEventListener('pointercancel',up);
-renderer.domElement.addEventListener('wheel',e=>{camera.fov=THREE.MathUtils.clamp(camera.fov+e.deltaY*.025,48,72);camera.updateProjectionMatrix();},{passive:true});
+renderer.domElement.addEventListener('wheel',e=>{camera.fov=THREE.MathUtils.clamp(camera.fov+e.deltaY*.025,55,78);camera.updateProjectionMatrix();},{passive:true});
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 
 const viewBar=document.createElement('div');
@@ -122,7 +124,7 @@ setView('CAPTAIN');
 
 const hud=document.createElement('div');hud.id='hud';document.body.append(hud);
 const hint=document.createElement('div');hint.id='hint';
-hint.innerHTML='<b>A320neo FLIGHT DECK</b><br>TAP = CONTROL • DRAG EMPTY SPACE = LOOK<br>CAPTAIN / CENTER / FO = CAMERA';
+hint.innerHTML='<b>A320neo FLIGHT DECK</b><br>TAP = CONTROL • DRAG EMPTY SPACE = LOOK<br>CAPTAIN / CENTER / FO = CAMERA • WHEEL = FOV';
 document.body.append(hint);
 
 let last=performance.now();
