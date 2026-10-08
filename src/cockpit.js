@@ -3,14 +3,16 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {CockpitControls} from './controls.js';
 import {MCDU} from './mcdu.js';
 
-const MODEL_URL='/Panel_A320_3D_2023.glb';
-
-// CAD export calibration.
-// The supplied CAD uses Z-up with the aircraft longitudinal axis on +Y.
-// Rotate -90° around X so aircraft +Y becomes simulator -Z (forward).
+const MODEL_URL=`${import.meta.env.BASE_URL}Panel_A320_3D_2023.glb`;
 const MODEL_SCALE=0.001;
 const MODEL_ROTATION_X=-Math.PI/2;
 const MODEL_POSITION=new THREE.Vector3(0.663,0.108,4.90);
+
+const DISPLAY_POSITIONS={
+  PFD:[-.46,1.31,-.79], ND:[-.46,.91,-.79],
+  ECAM1:[0,1.16,-.80], ECAM2:[0,.79,-.80]
+};
+const MCDU_POSITION=[0,.57,-.72];
 
 export function buildCockpit(scene,instruments){
   const root=new THREE.Group();
@@ -19,6 +21,9 @@ export function buildCockpit(scene,instruments){
 
   const controls=new CockpitControls(root);
   const mcdu=new MCDU();
+  const interactive=[];
+  const anchors={};
+  let ready=false;
 
   const modelRoot=new THREE.Group();
   modelRoot.name='A320_CAD_MODEL';
@@ -31,6 +36,44 @@ export function buildCockpit(scene,instruments){
   status.id='model-status';
   status.textContent='LOADING A320 3D COCKPIT…';
   document.body.append(status);
+
+  function zone(name,pos,size,type='button',extra={}){
+    const mesh=new THREE.Mesh(
+      new THREE.BoxGeometry(...size),
+      new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})
+    );
+    mesh.name='HIT_'+name;
+    mesh.position.set(...pos);
+    controls.register(mesh,name,{type,...extra});
+    root.add(mesh);
+    interactive.push(mesh);
+    return mesh;
+  }
+
+  function addInteractionZones(){
+    zone('SPD',[-.22,1.57,-.76],[.13,.10,.08],'knob',{min:100,max:340,step:1,value:150,travel:.22});
+    zone('HDG',[-.05,1.57,-.76],[.13,.10,.08],'knob',{min:0,max:359,step:1,value:270,travel:.22});
+    zone('ALT',[.13,1.57,-.76],[.15,.10,.08],'knob',{min:1000,max:45000,step:100,value:5000,travel:.22});
+    zone('VS',[.30,1.57,-.76],[.13,.10,.08],'knob',{min:-6000,max:6000,step:100,value:0,travel:.22});
+    zone('AP1',[-.34,1.57,-.76],[.08,.07,.06]);
+    zone('ATHR',[-.43,1.57,-.76],[.08,.07,.06]);
+    zone('FD',[-.52,1.57,-.76],[.08,.07,.06]);
+
+    zone('GEAR',[.02,.37,-.60],[.12,.20,.12],'lever',{min:0,max:1,value:0,travel:.18});
+    zone('PARK_BRAKE',[.24,.37,-.60],[.12,.12,.12]);
+    zone('THROTTLE',[.00,.48,-.49],[.42,.24,.18],'lever',{min:0,max:1,value:.35,travel:.28});
+    zone('FLAP_1',[-.30,.43,-.62],[.08,.08,.08]);
+    zone('FLAP_2',[-.22,.43,-.62],[.08,.08,.08]);
+    zone('FLAP_3',[-.14,.43,-.62],[.08,.08,.08]);
+    zone('FLAP_4',[-.06,.43,-.62],[.08,.08,.08]);
+
+    zone('SIDESTICK',[-.72,.84,-.22],[.20,.40,.24],'stick',{min:-1,max:1,value:0,travel:.35});
+
+    const keyW=.07,keyH=.055;
+    for(let r=0;r<8;r++) for(let c=0;c<6;c++){
+      zone(`MCDU_${r}_${c}`,[-.215+c*keyW,.48,-.735],[keyW*.92,keyH,.025]);
+    }
+  }
 
   const loader=new GLTFLoader();
   loader.load(MODEL_URL,(gltf)=>{
@@ -50,6 +93,15 @@ export function buildCockpit(scene,instruments){
       }
     });
     modelRoot.add(model);
+
+    instruments.mount(0,root,DISPLAY_POSITIONS.PFD);
+    instruments.mount(1,root,DISPLAY_POSITIONS.ND);
+    instruments.mount(2,root,DISPLAY_POSITIONS.ECAM1);
+    instruments.mount(3,root,DISPLAY_POSITIONS.ECAM2);
+    mcdu.mount(root,MCDU_POSITION);
+    addInteractionZones();
+
+    ready=true;
     status.textContent='A320 COCKPIT • 3D MODEL READY';
     setTimeout(()=>status.remove(),2200);
   },xhr=>{
@@ -58,40 +110,11 @@ export function buildCockpit(scene,instruments){
     }
   },err=>{
     console.error('A320 GLB load failed',err);
-    status.textContent='3D MODEL NOT FOUND — PUT GLB IN /public/models/';
+    status.textContent='3D MODEL LOAD FAILED — CHECK /Panel_A320_3D_2023.glb';
   });
-
-  // These are intentionally empty anchor groups. Once the CAD model is in place,
-  // avionics textures and interaction colliders can be positioned against the real
-  // display faces without rebuilding the cockpit geometry.
-  const anchors={};
-  ['PFD','ND','ECAM1','ECAM2','FCU','MCDU','THROTTLE','SIDESTICK'].forEach(n=>{
-    const a=new THREE.Group();
-    a.name='ANCHOR_'+n;
-    root.add(a);
-    anchors[n]=a;
-  });
-
-  // MCDU remains functional while we calibrate its exact CAD surface.
-  const mcduFrame=new THREE.Mesh(
-    new THREE.BoxGeometry(.76,.16,.84),
-    new THREE.MeshStandardMaterial({color:0x111416,roughness:.72})
-  );
-  mcduFrame.visible=false;
-  root.add(mcduFrame);
-  mcdu.mount(root,[0,0,0]);
-
-  // Keep the old procedural cockpit out of the render path. The GLB is the
-  // authoritative physical cockpit; systems/instruments are layered on top.
-  const interactive=[];
 
   return {
-    root,
-    controls,
-    interactive,
-    mcdu,
-    modelRoot,
-    anchors,
-    ready:false
+    root,controls,interactive,mcdu,modelRoot,anchors,
+    get ready(){return ready;}
   };
 }
