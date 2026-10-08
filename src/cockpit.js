@@ -87,6 +87,23 @@ export function buildCockpit(scene,instruments){
     }
   }
 
+    // Always-visible gray diagnostic dashboard. If the GLB is misplaced or
+    // fails to load, this proves the Three.js camera/renderer is actually drawing.
+    const diagnostic=new THREE.Group();
+    const dash=new THREE.Mesh(
+      new THREE.BoxGeometry(2.15,.55,.22),
+      DIAGNOSTIC_GRAY
+    );
+    dash.position.set(0,1.02,-1.25);
+    diagnostic.add(dash);
+    const glareShield=new THREE.Mesh(
+      new THREE.BoxGeometry(1.55,.18,.12),
+      DIAGNOSTIC_GRAY
+    );
+    glareShield.position.set(0,1.40,-1.18);
+    diagnostic.add(glareShield);
+    root.add(diagnostic);
+
   const loader=new GLTFLoader();
   loader.load(MODEL_URL,(gltf)=>{
     const model=gltf.scene;
@@ -113,23 +130,6 @@ export function buildCockpit(scene,instruments){
       }
     });
     modelRoot.add(model);
-
-    // Always-visible gray diagnostic dashboard. If the GLB is misplaced or
-    // fails to load, this proves the Three.js camera/renderer is actually drawing.
-    const diagnostic=new THREE.Group();
-    const dash=new THREE.Mesh(
-      new THREE.BoxGeometry(2.15,.55,.22),
-      DIAGNOSTIC_GRAY
-    );
-    dash.position.set(0,1.02,-1.25);
-    diagnostic.add(dash);
-    const glareShield=new THREE.Mesh(
-      new THREE.BoxGeometry(1.55,.18,.12),
-      DIAGNOSTIC_GRAY
-    );
-    glareShield.position.set(0,1.40,-1.18);
-    diagnostic.add(glareShield);
-    root.add(diagnostic);
 
     instruments.mount(0,root,DISPLAY_POSITIONS.PFD);
     instruments.mount(1,root,DISPLAY_POSITIONS.ND);
