@@ -7,6 +7,7 @@ const MODEL_URL=`${import.meta.env.BASE_URL}Panel_A320_3D_2023.glb`;
 const MODEL_SCALE=0.001;
 const MODEL_ROTATION_X=-Math.PI/2;
 const MODEL_POSITION=new THREE.Vector3(0.663,0.108,4.90);
+const DIAGNOSTIC_GRAY=new THREE.MeshStandardMaterial({color:0x62666b,roughness:.82,metalness:.08});
 
 const DISPLAY_POSITIONS={
   PFD:[-.46,1.31,-.79], ND:[-.46,.91,-.79],
@@ -16,6 +17,8 @@ const MCDU_POSITION=[0,.57,-.72];
 
 export function buildCockpit(scene,instruments){
   const root=new THREE.Group();
+  // Diagnostic scene: blue background + neutral gray cockpit geometry.
+
   root.name='A320_COCKPIT_ROOT';
   scene.add(root);
 
@@ -90,6 +93,14 @@ export function buildCockpit(scene,instruments){
     model.name='A320_CAD_COCKPIT';
     model.traverse(o=>{
       if(o.isMesh){
+        // Diagnostic mode: force the imported cockpit to a neutral gray so
+        // white-material/lighting issues cannot hide the geometry.
+        const mats=Array.isArray(o.material)?o.material:[o.material];
+        for(const m of mats){
+          if(m && 'color' in m) m.color.setHex(0x62666b);
+          if(m && 'emissive' in m) m.emissive.setHex(0x000000);
+          if(m && 'emissiveIntensity' in m) m.emissiveIntensity=0;
+        }
         o.castShadow=true;
         o.receiveShadow=true;
         if(o.material){
@@ -102,6 +113,23 @@ export function buildCockpit(scene,instruments){
       }
     });
     modelRoot.add(model);
+
+    // Always-visible gray diagnostic dashboard. If the GLB is misplaced or
+    // fails to load, this proves the Three.js camera/renderer is actually drawing.
+    const diagnostic=new THREE.Group();
+    const dash=new THREE.Mesh(
+      new THREE.BoxGeometry(2.15,.55,.22),
+      DIAGNOSTIC_GRAY
+    );
+    dash.position.set(0,1.02,-1.25);
+    diagnostic.add(dash);
+    const glareShield=new THREE.Mesh(
+      new THREE.BoxGeometry(1.55,.18,.12),
+      DIAGNOSTIC_GRAY
+    );
+    glareShield.position.set(0,1.40,-1.18);
+    diagnostic.add(glareShield);
+    root.add(diagnostic);
 
     instruments.mount(0,root,DISPLAY_POSITIONS.PFD);
     instruments.mount(1,root,DISPLAY_POSITIONS.ND);
