@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { CockpitControls } from './controls.js';
+import { MCDU } from './mcdu.js';
 
 export function buildCockpit(scene, instruments, onAction) {
   const root = new THREE.Group(); scene.add(root);
@@ -33,7 +34,7 @@ export function buildCockpit(scene, instruments, onAction) {
   button('GEAR',[0,1.17,-.72],'GEAR',.16,.18);button('PARK_BRAKE',[-.43,1.17,-.72],'PARK_BRAKE',.16,.11);
 
   box('MCDU housing',[-.42,1.12,-.75],[.62,.11,.62],dark);box('MCDU screen',[-.42,1.19,-.69],[.43,.025,.27],black);
-  for(let r=0;r<4;r++)for(let c=0;c<3;c++)button('MCDU_L'+r+'_'+c,[-.65+c*.23,1.12,-.92+r*.12],'MCDU_KEY');
+  for(let r=0;r<4;r++)for(let c=0;c<3;c++)button('MCDU_L'+r+'_'+c,[-.65+c*.23,1.12,-.92+r*.12],'MCDU_KEY_'+r+'_'+c);
 
   box('sidestick base',[-.92,.88,.95],[.48,.16,.5],dark);const stick=box('SIDESTICK',[-.92,1.16,.95],[.12,.52,.12],metal);controls.register(stick,'SIDESTICK',{type:'stick'});
 
@@ -44,5 +45,5 @@ export function buildCockpit(scene, instruments, onAction) {
 
   box('left sidewall',[-2.35,1.48,.15],[.24,2.15,4.4],dark);box('right sidewall',[2.35,1.48,.15],[.24,2.15,4.4],dark);box('floor',[0,.04,.2],[4.8,.08,5.1],dark);
   box('pilot seat',[-.72,.76,-1.15],[.72,1.2,.7],dark);box('copilot seat',[.72,.76,-1.15],[.72,1.2,.7],dark);
-  return {root,interactive:controls.items,controls};
+  return {root,interactive:controls.items,controls,mcdu};
 }
