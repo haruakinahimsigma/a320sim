@@ -71,7 +71,7 @@ function action(name){
   else if(name==='VS')systems.set('selVs',s.selVs>=5500?-6000:s.selVs+500);
   else if(name==='GEAR')systems.toggle('gearDown');else if(name==='PARK_BRAKE')systems.toggle('parkBrake');
   else if(name.startsWith('FLAP_'))systems.set('flaps',name==='FLAP_4'?4:Number(name.slice(5)));
-  else if(name==='THROTTLE'){systems.set('throttle1',Math.min(1,s.throttle1+.05));systems.set('throttle2',Math.min(1,s.throttle2+.05);systems.set('athr',false);}
+  else if(name==='THROTTLE'){systems.set('throttle1',Math.min(1,s.throttle1+.05));systems.set('throttle2',Math.min(1,s.throttle2+.05));systems.set('athr',false);}
   else if(name==='BAT'||name==='ELEC')systems.toggle('elec');else if(name==='APU')systems.set('apu',1);
   else if(name==='ENG1'||name==='ENG2')systems.set(name.toLowerCase(),1);
   else if(name==='HYD'){systems.toggle('hydGreen');systems.toggle('hydBlue');systems.toggle('hydYellow');}
