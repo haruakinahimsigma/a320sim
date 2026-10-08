@@ -1,0 +1,7 @@
+import * as THREE from 'three';
+export class MCDU{
+  constructor(){this.page='MCDU MENU';this.input='';this.message='READY';const c=document.createElement('canvas');c.width=480;c.height=320;this.canvas=c;this.texture=new THREE.CanvasTexture(c);this.texture.colorSpace=THREE.SRGBColorSpace;this.mesh=new THREE.Mesh(new THREE.PlaneGeometry(.43,.27),new THREE.MeshBasicMaterial({map:this.texture}))}
+  mount(parent,p){this.mesh.position.set(...p);parent.add(this.mesh)}
+  key(k){if(k==='CLR'){this.input='';this.message='CLEARED';return}if(k==='MENU'){this.page='MCDU MENU';return}if(k==='DIR'){this.page='DIRECT TO';return}if(k==='FPLN'){this.page='F-PLN';return}if(k==='PERF'){this.page='PERF';return}this.input+=k;this.message='ENTRY'}
+  draw(){const g=this.canvas.getContext('2d');g.fillStyle='#00150c';g.fillRect(0,0,480,320);g.fillStyle='#55e88a';g.font='20px monospace';g.fillText(this.page,18,28);g.font='17px monospace';if(this.page==='MCDU MENU'){g.fillText('L1  F-PLN',18,72);g.fillText('L2  DIR',18,110);g.fillText('L3  PERF',18,148);g.fillText('R1  DATA',350,72);g.fillText('R2  INIT',350,110)}else if(this.page==='F-PLN'){g.fillText('ACTIVE F-PLN',18,72);g.fillText('ORIGIN  ----',18,110);g.fillText('DEST    ----',18,148);g.fillText('NEXT    ----',18,186)}else if(this.page==='PERF'){g.fillText('PERF TAKEOFF',18,72);g.fillText('FLAPS  1',18,110);g.fillText('THR RED  ----',18,148)}else{g.fillText('DIRECT TO',18,72);g.fillText('IDENT  '+(this.input||'----'),18,110)}g.fillText(this.message,18,285);this.texture.needsUpdate=true}
+}
