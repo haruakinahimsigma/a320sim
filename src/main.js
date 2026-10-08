@@ -6,8 +6,8 @@ import {buildCockpit} from './cockpit.js';
 
 const systems=new A320Systems();
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x8fc5e8);
-scene.fog=new THREE.Fog(0x8fc5e8,12,42);
+scene.background=new THREE.Color(0x2487d8);
+scene.fog=new THREE.Fog(0x2487d8,12,42);
 
 // Wider, slightly pulled-back flight-deck camera.
 // Three.js PerspectiveCamera FOV is the vertical field of view.
