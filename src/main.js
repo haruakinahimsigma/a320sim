@@ -91,6 +91,13 @@ function updateAirport(s,dt){
 
 const instruments=new Instruments();
 const cockpit=buildCockpit(scene,instruments);
+const aircraftGroup=new THREE.Group();
+aircraftGroup.name='AIRCRAFT_FLIGHT_FRAME';
+aircraftGroup.rotation.order='YXZ';
+scene.add(aircraftGroup);
+scene.remove(cockpit.root);
+aircraftGroup.add(cockpit.root);
+aircraftGroup.add(camera);
 
 cockpit.mcdu.onCommand=command=>{
   if(command.type==='DIRECT_TO') systems.directTo(command.ident);
@@ -290,6 +297,9 @@ function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
   systems.update(dt);cockpit.controls.animate();cockpit.update(systems.state);updateAirport(systems.state,dt);instruments.update(systems.state);cockpit.mcdu.draw(systems.state);
   const s=systems.state;
+  aircraftGroup.rotation.x=s.pitch*Math.PI/180;
+  aircraftGroup.rotation.y=-s.heading*Math.PI/180;
+  aircraftGroup.rotation.z=-s.bank*Math.PI/180;
   updateTouchUI(s);
   camera.position.lerp(targetPos,1-Math.pow(.001,dt));
   camera.rotation.y=THREE.MathUtils.lerp(camera.rotation.y,lookYaw,1-Math.pow(.001,dt));
