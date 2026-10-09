@@ -267,6 +267,7 @@ function throttleLabel(v){
   return 'MANUAL';
 }
 function updateTouchUI(s){
+  sync3DControl('GEAR',s.gearDown?1:0);
   document.getElementById('gear-button').textContent=s.gearDown?'GEAR DOWN':'GEAR UP';
   document.getElementById('gear-button').classList.toggle('selected',s.gearDown);
   document.getElementById('flaps-button').textContent='FLAPS '+s.flaps;
