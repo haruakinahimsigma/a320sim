@@ -15,7 +15,7 @@ export function buildCockpit(scene,instruments){
   const mcdu=new MCDU();
   const interactive=[];
   const anchors={};
-  const visualControls={throttleLevers:[],sidesticks:[],gearLever:null,flapLever:null};
+  const visualControls={sidesticks:[],gearLever:null,flapLever:null};
   let ready=false;
 
   const modelRoot=new THREE.Group();
@@ -79,45 +79,26 @@ export function buildCockpit(scene,instruments){
   function addScreenFrames(){
     const frameMat=new THREE.MeshStandardMaterial({color:0x11171b,roughness:.5,metalness:.15});
     const bezelMat=new THREE.MeshStandardMaterial({color:0x343a3e,roughness:.72,metalness:.05});
-    // Keep the display stack well forward of the seated camera; the old
-    // 12 cm gap put the panels directly against the viewer's face.
+    // Compact, aligned display stack mounted farther forward on the panel,
+    // rather than oversized screens hovering close to the pilot's face.
     const screens=[
-      {i:0,name:'PFD',p:[-.48,1.16,-.86]},
-      {i:1,name:'ND',p:[-.13,1.16,-.86]},
-      {i:2,name:'ECAM1',p:[.22,1.16,-.86]},
-      {i:3,name:'ECAM2',p:[.22,.83,-.86]}
+      {i:0,name:'PFD',p:[-.43,1.16,-1.18]},
+      {i:1,name:'ND',p:[-.11,1.16,-1.18]},
+      {i:2,name:'ECAM1',p:[.21,1.16,-1.18]},
+      {i:3,name:'ECAM2',p:[.21,.89,-1.18]}
     ];
     for(const item of screens){
-      const frame=new THREE.Mesh(new THREE.BoxGeometry(.325,.255,.028),frameMat);
-      frame.position.set(item.p[0],item.p[1],item.p[2]-.025);
+      const frame=new THREE.Mesh(new THREE.BoxGeometry(.295,.225,.022),frameMat);
+      frame.position.set(item.p[0],item.p[1],item.p[2]-.018);
       frame.name=item.name+'_BEZEL';
       root.add(frame);
-      const lip=new THREE.Mesh(new THREE.BoxGeometry(.309,.239,.008),bezelMat);
-      lip.position.set(item.p[0],item.p[1],item.p[2]-.008);
+      const lip=new THREE.Mesh(new THREE.BoxGeometry(.282,.212,.006),bezelMat);
+      lip.position.set(item.p[0],item.p[1],item.p[2]-.006);
       root.add(lip);
       instruments.mount(item.i,root,item.p);
     }
   }
 
-  function addVisibleThrottleLevers(){
-    const metal=new THREE.MeshStandardMaterial({color:0x6c777d,roughness:.42,metalness:.65});
-    const dark=new THREE.MeshStandardMaterial({color:0x171b1d,roughness:.7,metalness:.12});
-    const amber=new THREE.MeshStandardMaterial({color:0xd49a42,roughness:.4,metalness:.15});
-    // Twin thrust levers belong on the center pedestal, ahead of the flap/
-    // speed-brake controls. Use two slim, angled lever lines, not a square base.
-    for(const x of [-.024,.024]){
-      const lever=new THREE.Group();
-      lever.position.set(x,.98,-.49); // 59 cm up, 30 cm back
-      const shaft=new THREE.Mesh(new THREE.BoxGeometry(.012,.205,.012),metal);
-      shaft.position.y=.105;lever.add(shaft);
-      const grip=new THREE.Mesh(new THREE.BoxGeometry(.032,.042,.026),dark);
-      grip.position.set(0,.205,0);lever.add(grip);
-      const cap=new THREE.Mesh(new THREE.BoxGeometry(.023,.009,.02),amber);
-      cap.position.set(0,.23,0);lever.add(cap);
-      root.add(lever);
-      visualControls.throttleLevers.push(lever);
-    }
-  }
 
   function addVisibleConfigLevers(){
     const metal=new THREE.MeshStandardMaterial({color:0x7b8589,roughness:.45,metalness:.55});
@@ -186,7 +167,6 @@ export function buildCockpit(scene,instruments){
 
     addInteractionZones();
     addScreenFrames();
-    addVisibleThrottleLevers();
     ready=true;
     status.textContent='A320 COCKPIT • 3D MODEL READY';
     setTimeout(()=>status.remove(),2200);
@@ -198,11 +178,6 @@ export function buildCockpit(scene,instruments){
   });
 
   function update(state){
-    const t=(state.throttle1+state.throttle2)*.5;
-    visualControls.throttleLevers.forEach(lever=>{
-      // Idle at 135°, advance smoothly to 45° at TOGA.
-      lever.rotation.z=-Math.PI*.5+Math.PI*.25-t*(Math.PI*.5); // rotate 90° clockwise, retain 135°→45° travel
-    });
     if(visualControls.gearLever){visualControls.gearLever.rotation.z=state.gearDown?-.42:0;}
     if(visualControls.flapLever){visualControls.flapLever.rotation.z=-state.flaps*.12;}
     visualControls.sidesticks.forEach(({group,side})=>{
