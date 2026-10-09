@@ -81,18 +81,18 @@ export function buildCockpit(scene,instruments){
     const frameMat=new THREE.MeshStandardMaterial({color:0x11171b,roughness:.5,metalness:.15});
     const bezelMat=new THREE.MeshStandardMaterial({color:0x343a3e,roughness:.72,metalness:.05});
     const screens=[
-      {i:0,name:'PFD',p:[-.60,1.16,-.505]},
-      {i:1,name:'ND',p:[-.17,1.16,-.505]},
-      {i:2,name:'ECAM1',p:[.30,1.16,-.505]},
-      {i:3,name:'ECAM2',p:[.30,.83,-.505]}
+      {i:0,name:'PFD',p:[-.60,1.16,-.475]},
+      {i:1,name:'ND',p:[-.17,1.16,-.475]},
+      {i:2,name:'ECAM1',p:[.30,1.16,-.475]},
+      {i:3,name:'ECAM2',p:[.30,.83,-.475]}
     ];
     for(const item of screens){
       const frame=new THREE.Mesh(new THREE.BoxGeometry(.405,.285,.035),frameMat);
-      frame.position.set(item.p[0],item.p[1],item.p[2]+.012);
+      frame.position.set(item.p[0],item.p[1],item.p[2]-.03);
       frame.name=item.name+'_BEZEL';
       root.add(frame);
       const lip=new THREE.Mesh(new THREE.BoxGeometry(.385,.265,.008),bezelMat);
-      lip.position.set(item.p[0],item.p[1],item.p[2]-.008);
+      lip.position.set(item.p[0],item.p[1],item.p[2]-.01);
       root.add(lip);
       instruments.mount(item.i,root,item.p);
     }
