@@ -9,12 +9,12 @@ const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x91c8e8);
 scene.fog=new THREE.Fog(0x91c8e8,1500,6500);
 
-// Move 30 cm aft from the previous seated view while preserving eye height.
-const CAMERA_Z=-0.35;
+// Move the seated view 1 m forward; shift the captain eye 5 cm left.
+const CAMERA_Z=-1.35;
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,120);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.33,1.12,CAMERA_Z),
+  CAPTAIN:new THREE.Vector3(-.38,1.12,CAMERA_Z),
   CENTER:new THREE.Vector3(.20,1.12,CAMERA_Z),
   FO:new THREE.Vector3(.68,1.12,CAMERA_Z)
 };
