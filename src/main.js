@@ -6,8 +6,8 @@ import {buildCockpit} from './cockpit.js';
 
 const systems=new A320Systems();
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x2487d8);
-scene.fog=new THREE.Fog(0x2487d8,12,42);
+scene.background=new THREE.Color(0x91c8e8);
+scene.fog=new THREE.Fog(0x91c8e8,1500,6500);
 
 // Move 30 cm aft from the previous seated view while preserving eye height.
 const CAMERA_Z=-0.35;
