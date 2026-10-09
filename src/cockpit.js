@@ -69,7 +69,6 @@ export function buildCockpit(scene,instruments){
     zone('FLAP_3',[-.14,.43,-.62],[.08,.08,.08]);
     zone('FLAP_4',[-.06,.43,-.62],[.08,.08,.08]);
     zone('SIDESTICK',[-.72,.84,-.22],[.20,.40,.24],'stick',{min:-1,max:1,value:0,travel:.35});
-    zone('SIDESTICK_FO',[.78,.84,-.22],[.20,.40,.24],'stick',{min:-1,max:1,value:0,travel:.35});
 
     const keyW=.07,keyH=.055;
     for(let r=0;r<8;r++) for(let c=0;c<6;c++){
