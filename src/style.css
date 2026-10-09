@@ -18,3 +18,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#8fc5e8;col
 #throttle-detent{font-size:10px;font-weight:700;letter-spacing:.04em;background:#071018bb;border:1px solid #dce7ed44;border-radius:5px;padding:4px 5px;min-width:70px;text-align:center}
 @media(max-width:700px){#hud{font-size:9px;padding:7px 8px;max-width:calc(100vw - 150px);line-height:1.45}#hint{display:none}#viewbar button{padding:7px 8px;font-size:9px}#viewbar{top:max(8px,env(safe-area-inset-top));}#virtual-stick{width:clamp(108px,24vw,148px);height:clamp(108px,24vw,148px);left:max(15px,env(safe-area-inset-left));bottom:max(26px,env(safe-area-inset-bottom))}#throttle-control{right:max(12px,env(safe-area-inset-right));height:min(58vh,360px);min-height:220px;width:76px}#throttle-track{width:30px;min-height:180px}.throttle-mark span{left:38px;font-size:8px}.throttle-title{font-size:9px}.throttle-title b{font-size:16px}}
 @media(orientation:portrait){#touch-controls{opacity:.92}#throttle-control{height:45vh;min-height:200px}#virtual-stick{width:100px;height:100px}}
+
+#systems-buttons{position:absolute;right:max(105px,calc(env(safe-area-inset-right) + 98px));top:76px;display:flex;flex-direction:column;gap:7px;width:86px;pointer-events:auto}
+#systems-buttons button{min-height:34px;border:1px solid #e0edf477;border-radius:7px;padding:6px 5px;background:#101a23d9;color:#edf6f9;font:700 9px ui-monospace,monospace;letter-spacing:.02em;box-shadow:0 3px 10px #0005;touch-action:manipulation}
+#systems-buttons button.selected{background:#345a4aeb;border-color:#9de5b8;color:#fff}
+#systems-buttons button:active{transform:scale(.97)}
+@media(max-width:700px){#systems-buttons{right:max(84px,calc(env(safe-area-inset-right) + 78px));top:68px;width:74px;gap:5px}#systems-buttons button{min-height:31px;font-size:8px;padding:5px 3px}}
