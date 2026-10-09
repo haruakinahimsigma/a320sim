@@ -102,8 +102,8 @@ export function buildCockpit(scene,instruments){
     );
     glareShield.position.set(0,1.40,-1.18);
     diagnostic.add(glareShield);
-    // Diagnostic geometry disabled: show the actual GLB cockpit instead.
-  diagnostic.visible=false;
+    // Keep gray fallback visible until the real GLB is confirmed rendering.
+    diagnostic.visible=true;
   root.add(diagnostic);
 
   const loader=new GLTFLoader();
