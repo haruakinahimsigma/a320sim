@@ -82,10 +82,10 @@ export function buildCockpit(scene,instruments){
     // Compact, aligned display stack mounted farther forward on the panel,
     // rather than oversized screens hovering close to the pilot's face.
     const screens=[
-      {i:0,name:'PFD',p:[-.43,1.16,-1.18]},
-      {i:1,name:'ND',p:[-.11,1.16,-1.18]},
-      {i:2,name:'ECAM1',p:[.21,1.16,-1.18]},
-      {i:3,name:'ECAM2',p:[.21,.89,-1.18]}
+      {i:0,name:'PFD',p:[-.43,.88,-1.18]},
+      {i:1,name:'ND',p:[-.11,.88,-1.18]},
+      {i:2,name:'ECAM1',p:[.21,.88,-1.18]},
+      {i:3,name:'ECAM2',p:[.21,.61,-1.18]}
     ];
     for(const item of screens){
       const frame=new THREE.Mesh(new THREE.BoxGeometry(.295,.225,.022),frameMat);
