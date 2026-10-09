@@ -6,7 +6,6 @@ import {MCDU} from './mcdu.js';
 const MODEL_URL=`${import.meta.env.BASE_URL}Panel_A320_3D_2023.glb`;
 const MODEL_SCALE=0.001;
 const MODEL_ROTATION_X=-Math.PI/2;
-const MODEL_POSITION=new THREE.Vector3(0.663,0.108,-0.55);
 const DIAGNOSTIC_GRAY=new THREE.MeshStandardMaterial({color:0x62666b,roughness:.82,metalness:.08});
 
 const DISPLAY_POSITIONS={
@@ -32,7 +31,7 @@ export function buildCockpit(scene,instruments){
   modelRoot.name='A320_CAD_MODEL';
   modelRoot.scale.setScalar(MODEL_SCALE);
   modelRoot.rotation.x=MODEL_ROTATION_X;
-  modelRoot.position.copy(MODEL_POSITION);
+  modelRoot.position.set(0,0,0);
   root.add(modelRoot);
 
   const status=document.createElement('div');
@@ -102,7 +101,7 @@ export function buildCockpit(scene,instruments){
     );
     glareShield.position.set(0,1.40,-1.18);
     diagnostic.add(glareShield);
-    // Keep gray fallback visible until the real GLB is confirmed rendering.
+    // Hide this fallback once the imported cockpit loads successfully.
     diagnostic.visible=true;
   root.add(diagnostic);
 
@@ -132,6 +131,23 @@ export function buildCockpit(scene,instruments){
       }
     });
     modelRoot.add(model);
+
+    // Fit the imported model from its actual bounds instead of relying on
+    // guessed CAD units and offsets. The source GLB may use millimeters.
+    modelRoot.updateMatrixWorld(true);
+    let bounds=new THREE.Box3().setFromObject(modelRoot);
+    const size=bounds.getSize(new THREE.Vector3());
+    if(size.x>0 && size.y>0 && size.z>0){
+      const fitScale=Math.min(2.15/size.x,1.35/size.y,2.0/size.z);
+      modelRoot.scale.multiplyScalar(fitScale);
+      modelRoot.updateMatrixWorld(true);
+      bounds=new THREE.Box3().setFromObject(modelRoot);
+      const center=bounds.getCenter(new THREE.Vector3());
+      modelRoot.position.add(new THREE.Vector3(-center.x,1.0-center.y,-0.85-center.z));
+      modelRoot.updateMatrixWorld(true);
+      console.info('A320 model fitted',bounds.getSize(new THREE.Vector3()));
+    }
+    diagnostic.visible=false;
 
     instruments.mount(0,root,DISPLAY_POSITIONS.PFD);
     instruments.mount(1,root,DISPLAY_POSITIONS.ND);
