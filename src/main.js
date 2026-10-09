@@ -240,7 +240,8 @@ function updateStick(e){
   const dy=THREE.MathUtils.clamp(((r.top+r.height/2)-e.clientY)/radius,-1,1);
   stickKnob.style.transform=`translate(${dx*radius}px,${-dy*radius}px)`;
   systems.set('aileron',dx);
-  systems.set('elevator',dy);
+  // Reverse pitch axis so pushing the stick forward commands nose-down.
+  systems.set('elevator',-dy);
   sync3DControl('SIDESTICK',dx);
 }
 stick.addEventListener('pointerdown',e=>{
