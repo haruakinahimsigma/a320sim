@@ -11,11 +11,11 @@ scene.fog=new THREE.Fog(0x2487d8,12,42);
 
 // Start clearly outside the fitted cockpit geometry. The model is centered
 // near z=-0.85 and can extend toward z=0, so z=2.5 avoids starting inside it.
-const CAMERA_Z=0.35;
+const CAMERA_Z=-0.65; // 1 metre forward from the previous camera position
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.28,1.12,CAMERA_Z),
+  CAPTAIN:new THREE.Vector3(-.33,1.12,CAMERA_Z),
   CENTER:new THREE.Vector3(.20,1.12,CAMERA_Z),
   FO:new THREE.Vector3(.68,1.12,CAMERA_Z)
 };
