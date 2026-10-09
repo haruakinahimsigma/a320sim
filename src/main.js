@@ -218,13 +218,17 @@ touchUI.innerHTML=`
     </div>
     <div id="throttle-detent">MANUAL</div>
   </div>
-  <div id="systems-buttons"><button id="gear-button">GEAR UP</button><button id="flaps-button">FLAPS 0</button><button id="spoilers-button">SPOILERS 0</button><button id="brake-button">PARK BRK</button></div>`;
+  <div id="systems-buttons"><button id="gear-button">GEAR UP</button><button id="flaps-button">FLAPS 0</button><button id="spoilers-button">SPOILERS 0</button><button id="brake-button">BRAKE</button><button id="parkbrake-button">PARK BRK</button></div>`;
 document.body.append(touchUI);
 
 document.getElementById('gear-button').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();systems.toggle('gearDown');});
 document.getElementById('flaps-button').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();systems.set('flaps',(systems.state.flaps+1)%5);});
 document.getElementById('spoilers-button').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();systems.set('spoilers',systems.state.spoilers>.5?0:1);});
-document.getElementById('brake-button').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();systems.toggle('parkBrake');});
+document.getElementById('brake-button').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();systems.set('brakes',1);});
+document.getElementById('brake-button').addEventListener('pointerup',e=>{e.preventDefault();e.stopPropagation();systems.set('brakes',0);});
+document.getElementById('brake-button').addEventListener('pointercancel',()=>systems.set('brakes',0));
+document.getElementById('brake-button').addEventListener('pointerleave',e=>{if(e.buttons===0)systems.set('brakes',0);});
+document.getElementById('parkbrake-button').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();systems.toggle('parkBrake');});
 
 const stick=document.getElementById('virtual-stick');
 const stickKnob=document.getElementById('virtual-stick-knob');
@@ -281,8 +285,10 @@ function updateTouchUI(s){
   document.getElementById('flaps-button').classList.toggle('selected',s.flaps>0);
   document.getElementById('spoilers-button').textContent='SPOILERS '+Math.round(s.spoilers*100)+'%';
   document.getElementById('spoilers-button').classList.toggle('selected',s.spoilers>.5);
-  document.getElementById('brake-button').textContent=s.parkBrake?'PARK BRK ON':'PARK BRK OFF';
-  document.getElementById('brake-button').classList.toggle('selected',s.parkBrake);
+  document.getElementById('brake-button').textContent=s.brakes?'BRAKING':'BRAKE';
+  document.getElementById('brake-button').classList.toggle('selected',s.brakes>0);
+  document.getElementById('parkbrake-button').textContent=s.parkBrake?'PARK BRK ON':'PARK BRK OFF';
+  document.getElementById('parkbrake-button').classList.toggle('selected',s.parkBrake);
   const v=THREE.MathUtils.clamp((s.throttle1+s.throttle2)*.5,0,1);
   document.getElementById('throttle-percent').textContent=Math.round(v*100)+'%';
   document.getElementById('throttle-fill').style.height=(v*100)+'%';
