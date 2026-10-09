@@ -6,7 +6,7 @@ export class A320Systems {
       ap1:false, ap2:false, fd:true, athr:true,
       gearDown:false, flaps:0, beacon:false, strobe:false,
       eng1:.20, eng2:.20, apu:0, elec:true,
-      hydGreen:true, hydBlue:true, hydYellow:true, parkBrake:true,
+      hydGreen:true, hydBlue:true, hydYellow:true, parkBrake:false,
       fuel:100, throttle1:0, throttle2:0, trim:0,
       lightPanel:.7, navMode:'ROSE', mach:0,
       rudder:0, elevator:0, aileron:0, spoilers:0, brakes:0,
