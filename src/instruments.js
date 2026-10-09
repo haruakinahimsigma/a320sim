@@ -9,7 +9,7 @@ export class Instruments{
     const c=document.createElement('canvas'); c.width=800; c.height=600;
     const tex=new THREE.CanvasTexture(c); tex.colorSpace=THREE.SRGBColorSpace;
     const mesh=new THREE.Mesh(
-      new THREE.PlaneGeometry(.37,.25),
+      new THREE.PlaneGeometry(.268,.198),
       new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide})
     );
     this.displays.push({name,c,tex,mesh});
