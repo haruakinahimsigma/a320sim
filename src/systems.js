@@ -67,7 +67,7 @@ export class A320Systems {
 
     // Engine spool is deliberately lagged: throttle is a command, not instant N1.
     const targetSpool=this.clamp(.20+throttle*.80,0,1);
-    const spoolRate=targetSpool>power?.72:.42;
+    const spoolRate=targetSpool > power ? 0.72 : 0.42;
     s.eng1+=(targetSpool-s.eng1)*this.clamp(dt*spoolRate,0,1);
     s.eng2+=(targetSpool-s.eng2)*this.clamp(dt*spoolRate,0,1);
     s.n1_1=s.eng1*100; s.n1_2=s.eng2*100;
