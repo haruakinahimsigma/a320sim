@@ -15,7 +15,7 @@ export function buildCockpit(scene,instruments){
   const mcdu=new MCDU();
   const interactive=[];
   const anchors={};
-  const visualControls={throttleLevers:[],sidesticks:[]};
+  const visualControls={throttleLevers:[],sidesticks:[],gearLever:null,flapLever:null};
   let ready=false;
 
   const modelRoot=new THREE.Group();
@@ -118,6 +118,17 @@ export function buildCockpit(scene,instruments){
     base.position.set(0,.48,-.515);root.add(base);
   }
 
+  function addVisibleConfigLevers(){
+    const metal=new THREE.MeshStandardMaterial({color:0x7b8589,roughness:.45,metalness:.55});
+    const dark=new THREE.MeshStandardMaterial({color:0x202629,roughness:.68,metalness:.1});
+    const gear=new THREE.Group();gear.position.set(.02,.37,-.60);
+    const gearStem=new THREE.Mesh(new THREE.CylinderGeometry(.012,.016,.13,8),metal);gearStem.position.y=.07;gear.add(gearStem);
+    const gearGrip=new THREE.Mesh(new THREE.BoxGeometry(.045,.035,.05),dark);gearGrip.position.set(0,.14,0);gear.add(gearGrip);root.add(gear);visualControls.gearLever=gear;
+    const flap=new THREE.Group();flap.position.set(-.18,.43,-.62);
+    const flapStem=new THREE.Mesh(new THREE.CylinderGeometry(.009,.012,.11,8),metal);flapStem.position.y=.055;flap.add(flapStem);
+    const flapGrip=new THREE.Mesh(new THREE.BoxGeometry(.035,.025,.045),dark);flapGrip.position.set(0,.115,0);flap.add(flapGrip);root.add(flap);visualControls.flapLever=flap;
+  }
+
   function addVisibleSidestick(x,side){
     const dark=new THREE.MeshStandardMaterial({color:0x202629,roughness:.7,metalness:.12});
     const metal=new THREE.MeshStandardMaterial({color:0x7b8589,roughness:.45,metalness:.55});
@@ -129,6 +140,7 @@ export function buildCockpit(scene,instruments){
     grip.position.set(0,.25,0);grip.rotation.z=side==='captain'?.08:-.08;group.add(grip);
     root.add(group);visualControls.sidesticks.push({group,side});
   }
+  addVisibleConfigLevers();
   addVisibleSidestick(-.72,'captain');
   addVisibleSidestick(.78,'fo');
 
@@ -190,12 +202,12 @@ export function buildCockpit(scene,instruments){
       lever.position.y=.49+t*.20;
       lever.rotation.x=-.10-t*.18;
     });
+    if(visualControls.gearLever){visualControls.gearLever.rotation.z=state.gearDown?-.42:0;}
+    if(visualControls.flapLever){visualControls.flapLever.rotation.z=-state.flaps*.12;}
     visualControls.sidesticks.forEach(({group,side})=>{
       const isCaptain=side==='captain';
-      const x=isCaptain?state.aileron:state.aileron;
-      const y=state.elevator;
-      group.rotation.z=x*.18;
-      group.rotation.x=-y*.20;
+      group.rotation.z=(isCaptain?state.aileron:0)*.18;
+      group.rotation.x=-(isCaptain?state.elevator:0)*.20;
     });
   }
 
