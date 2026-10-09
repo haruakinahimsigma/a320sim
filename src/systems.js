@@ -9,7 +9,7 @@ export class A320Systems {
       hydGreen:true, hydBlue:true, hydYellow:true, parkBrake:true,
       fuel:100, throttle1:0, throttle2:0, trim:0,
       lightPanel:.7, navMode:'ROSE', mach:0,
-      rudder:0, elevator:0, aileron:0, spoilers:0,
+      rudder:0, elevator:0, aileron:0, spoilers:0, brakes:0,
       lat:35.55, lon:139.78, onGround:true,
       radioAlt:0, gs:0, track:0, nav1:null, nav2:null,
       ils:false, locDeviation:0, gsDeviation:0, flightPathAngle:0,
@@ -86,6 +86,7 @@ export class A320Systems {
     let accel=thrustAccel-parasiteDrag-flapDrag-gearDrag-spoilerDrag+gravityAccel;
     if(s.onGround && s.parkBrake) accel=Math.min(0,accel);
     if(s.onGround && !s.parkBrake) accel-=.22;
+    if(s.onGround) accel-=this.clamp(s.brakes,0,1)*3.0;
     s.ias=this.clamp(s.ias+accel*dt,0,390);
 
     // Manual sidestick commands pitch/bank. The aircraft's flight path follows
