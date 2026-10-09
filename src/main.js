@@ -35,6 +35,60 @@ const sun=new THREE.DirectionalLight(0xfff4dd,3.0);
 sun.position.set(-5,8,4);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xb9dcff,1.0);fill.position.set(4,4,1);scene.add(fill);
 
+const airportGroup=new THREE.Group();
+airportGroup.name='AIRPORT_WORLD';
+scene.add(airportGroup);
+const grassMat=new THREE.MeshStandardMaterial({color:0x3c6343,roughness:1});
+const runwayMat=new THREE.MeshStandardMaterial({color:0x303438,roughness:.96});
+const taxiMat=new THREE.MeshStandardMaterial({color:0x42484a,roughness:.95});
+const markingMat=new THREE.MeshStandardMaterial({color:0xf0f0e8,roughness:.9});
+const yellowMat=new THREE.MeshStandardMaterial({color:0xf2c94c,roughness:.9});
+function groundPlane(w,l,mat,x,y,z){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,l),mat);
+  m.rotation.x=-Math.PI/2;m.position.set(x,y,z);m.receiveShadow=true;airportGroup.add(m);return m;
+}
+function groundBox(w,h,l,mat,x,y,z){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,l),mat);
+  m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;airportGroup.add(m);return m;
+}
+groundPlane(12000,12000,grassMat,0,-.10,-1600);
+groundPlane(45,3200,runwayMat,0,-.025,-1605);
+groundPlane(18,950,taxiMat,62,-.02,-500);
+groundPlane(120,240,taxiMat,80,-.015,-130);
+for(let x=-20;x<=20;x+=4){
+  groundPlane(2.1,12,markingMat,x,.002,-14);
+  groundPlane(2.1,12,markingMat,x,.002,-29);
+}
+for(let z=-55;z>-3170;z-=65)groundPlane(1.05,27,markingMat,0,.003,z);
+for(const z of [-290,-340,-410,-460]){
+  for(const side of [-1,1])for(let x=3;x<=17;x+=4)groundPlane(1.8,24,markingMat,side*x,.004,z);
+}
+for(let z=-20;z>-1400;z-=160){
+  groundPlane(.35,18,yellowMat,62,.003,z);
+}
+const terminalMat=new THREE.MeshStandardMaterial({color:0xb9c0c2,roughness:.75});
+const glassMat=new THREE.MeshStandardMaterial({color:0x3f7182,roughness:.28,metalness:.1});
+groundBox(78,9,18,terminalMat,103,4.5,-130);
+for(let x=70;x<=136;x+=11)groundBox(5,4,.35,glassMat,x,4.5,-120.7);
+groundBox(125,.08,270,taxiMat,78,.01,-130);
+const runwayNumberCanvas=document.createElement('canvas');
+runwayNumberCanvas.width=256;runwayNumberCanvas.height=128;
+const runwayNumberCtx=runwayNumberCanvas.getContext('2d');
+runwayNumberCtx.clearRect(0,0,256,128);runwayNumberCtx.fillStyle='#f4f4ec';
+runwayNumberCtx.font='bold 104px sans-serif';runwayNumberCtx.textAlign='center';runwayNumberCtx.textBaseline='middle';
+runwayNumberCtx.fillText('36',128,66);
+const runwayNumberTexture=new THREE.CanvasTexture(runwayNumberCanvas);
+runwayNumberTexture.colorSpace=THREE.SRGBColorSpace;
+const runwayNumber=new THREE.Mesh(new THREE.PlaneGeometry(8,4),new THREE.MeshBasicMaterial({map:runwayNumberTexture,transparent:true,side:THREE.DoubleSide}));
+runwayNumber.rotation.x=-Math.PI/2;runwayNumber.position.set(0,.004,-48);airportGroup.add(runwayNumber);
+function updateAirport(s,dt){
+  const distance=Math.max(0,s.gs)*.514444*dt;
+  const heading=(s.heading||0)*Math.PI/180;
+  airportGroup.position.x-=Math.sin(heading)*distance;
+  airportGroup.position.z+=Math.cos(heading)*distance;
+  airportGroup.position.y=-Math.max(0,s.alt)*.3048;
+}
+
 const instruments=new Instruments();
 const cockpit=buildCockpit(scene,instruments);
 
@@ -219,7 +273,7 @@ let last=performance.now();
 function frame(now){
   requestAnimationFrame(frame);
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  systems.update(dt);cockpit.controls.animate();instruments.update(systems.state);cockpit.mcdu.draw(systems.state);
+  systems.update(dt);cockpit.controls.animate();cockpit.update(systems.state);updateAirport(systems.state,dt);instruments.update(systems.state);cockpit.mcdu.draw(systems.state);
   const s=systems.state;
   updateTouchUI(s);
   camera.position.lerp(targetPos,1-Math.pow(.001,dt));
