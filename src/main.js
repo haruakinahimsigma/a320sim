@@ -9,19 +9,20 @@ const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x2487d8);
 scene.fog=new THREE.Fog(0x2487d8,12,42);
 
-// Wider, slightly pulled-back flight-deck camera.
-// Three.js PerspectiveCamera FOV is the vertical field of view.
+// Start clearly outside the fitted cockpit geometry. The model is centered
+// near z=-0.85 and can extend toward z=0, so z=2.5 avoids starting inside it.
+const CAMERA_Z=2.5;
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.48,1.53,0.15),
-  CENTER:new THREE.Vector3(0,1.53,0.15),
-  FO:new THREE.Vector3(.48,1.53,0.15)
+  CAPTAIN:new THREE.Vector3(-.48,1.53,CAMERA_Z),
+  CENTER:new THREE.Vector3(0,1.53,CAMERA_Z),
+  FO:new THREE.Vector3(.48,1.53,CAMERA_Z)
 };
 let viewName='CAPTAIN';
 let targetPos=cameraViews.CAPTAIN.clone();
 camera.position.copy(targetPos);
-camera.rotation.set(-.025,0,0);
+camera.rotation.set(-.16,0,0);
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
@@ -46,11 +47,11 @@ cockpit.mcdu.onCommand=command=>{
 const ray=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 let looking=false,lx=0,ly=0,drag=null;
-let lookYaw=0,lookPitch=-.06;
+let lookYaw=0,lookPitch=-.16;
 
 function setView(name){
   viewName=name;targetPos.copy(cameraViews[name]);
-  lookYaw=0; lookPitch=-.06;
+  lookYaw=0; lookPitch=-.16;
   camera.rotation.y=lookYaw; camera.rotation.x=lookPitch;
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
 }
