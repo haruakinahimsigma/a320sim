@@ -15,9 +15,9 @@ const CAMERA_Z=0.35;
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.03,80);
 camera.rotation.order='YXZ';
 const cameraViews={
-  CAPTAIN:new THREE.Vector3(-.48,1.22,CAMERA_Z),
-  CENTER:new THREE.Vector3(0,1.22,CAMERA_Z),
-  FO:new THREE.Vector3(.48,1.22,CAMERA_Z)
+  CAPTAIN:new THREE.Vector3(-.28,1.12,CAMERA_Z),
+  CENTER:new THREE.Vector3(.20,1.12,CAMERA_Z),
+  FO:new THREE.Vector3(.68,1.12,CAMERA_Z)
 };
 let viewName='CAPTAIN';
 let targetPos=cameraViews.CAPTAIN.clone();
