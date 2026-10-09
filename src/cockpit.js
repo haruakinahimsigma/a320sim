@@ -79,19 +79,21 @@ export function buildCockpit(scene,instruments){
   function addScreenFrames(){
     const frameMat=new THREE.MeshStandardMaterial({color:0x11171b,roughness:.5,metalness:.15});
     const bezelMat=new THREE.MeshStandardMaterial({color:0x343a3e,roughness:.72,metalness:.05});
+    // Keep the display stack well forward of the seated camera; the old
+    // 12 cm gap put the panels directly against the viewer's face.
     const screens=[
-      {i:0,name:'PFD',p:[-.60,1.16,-.475]},
-      {i:1,name:'ND',p:[-.17,1.16,-.475]},
-      {i:2,name:'ECAM1',p:[.30,1.16,-.475]},
-      {i:3,name:'ECAM2',p:[.30,.83,-.475]}
+      {i:0,name:'PFD',p:[-.48,1.16,-.86]},
+      {i:1,name:'ND',p:[-.13,1.16,-.86]},
+      {i:2,name:'ECAM1',p:[.22,1.16,-.86]},
+      {i:3,name:'ECAM2',p:[.22,.83,-.86]}
     ];
     for(const item of screens){
-      const frame=new THREE.Mesh(new THREE.BoxGeometry(.405,.285,.035),frameMat);
-      frame.position.set(item.p[0],item.p[1],item.p[2]-.03);
+      const frame=new THREE.Mesh(new THREE.BoxGeometry(.325,.255,.028),frameMat);
+      frame.position.set(item.p[0],item.p[1],item.p[2]-.025);
       frame.name=item.name+'_BEZEL';
       root.add(frame);
-      const lip=new THREE.Mesh(new THREE.BoxGeometry(.385,.265,.008),bezelMat);
-      lip.position.set(item.p[0],item.p[1],item.p[2]-.01);
+      const lip=new THREE.Mesh(new THREE.BoxGeometry(.309,.239,.008),bezelMat);
+      lip.position.set(item.p[0],item.p[1],item.p[2]-.008);
       root.add(lip);
       instruments.mount(item.i,root,item.p);
     }
@@ -101,20 +103,20 @@ export function buildCockpit(scene,instruments){
     const metal=new THREE.MeshStandardMaterial({color:0x6c777d,roughness:.42,metalness:.65});
     const dark=new THREE.MeshStandardMaterial({color:0x171b1d,roughness:.7,metalness:.12});
     const amber=new THREE.MeshStandardMaterial({color:0xd49a42,roughness:.4,metalness:.15});
-    for(const x of [-.055,.055]){
+    // Twin thrust levers belong on the center pedestal, ahead of the flap/
+    // speed-brake controls. Use two slim, angled lever lines, not a square base.
+    for(const x of [-.024,.024]){
       const lever=new THREE.Group();
-      lever.position.set(x,.49,-.515);
-      const shaft=new THREE.Mesh(new THREE.BoxGeometry(.018,.17,.018),metal);
-      shaft.position.y=.085;lever.add(shaft);
-      const grip=new THREE.Mesh(new THREE.BoxGeometry(.055,.045,.055),dark);
-      grip.position.set(0,.17,0);lever.add(grip);
-      const cap=new THREE.Mesh(new THREE.BoxGeometry(.038,.012,.038),amber);
-      cap.position.set(0,.195,0);lever.add(cap);
+      lever.position.set(x,.39,-.79);
+      const shaft=new THREE.Mesh(new THREE.BoxGeometry(.012,.205,.012),metal);
+      shaft.position.y=.105;lever.add(shaft);
+      const grip=new THREE.Mesh(new THREE.BoxGeometry(.032,.042,.026),dark);
+      grip.position.set(0,.205,0);lever.add(grip);
+      const cap=new THREE.Mesh(new THREE.BoxGeometry(.023,.009,.02),amber);
+      cap.position.set(0,.23,0);lever.add(cap);
       root.add(lever);
       visualControls.throttleLevers.push(lever);
     }
-    const base=new THREE.Mesh(new THREE.BoxGeometry(.24,.035,.22),dark);
-    base.position.set(0,.48,-.515);root.add(base);
   }
 
   function addVisibleConfigLevers(){
@@ -197,9 +199,9 @@ export function buildCockpit(scene,instruments){
 
   function update(state){
     const t=(state.throttle1+state.throttle2)*.5;
-    visualControls.throttleLevers.forEach((lever,i)=>{
-      lever.position.y=.49+t*.20;
-      lever.rotation.x=-.10-t*.18;
+    visualControls.throttleLevers.forEach(lever=>{
+      // Idle at 135°, advance smoothly to 45° at TOGA.
+      lever.rotation.z=Math.PI*.25-t*(Math.PI*.5);
     });
     if(visualControls.gearLever){visualControls.gearLever.rotation.z=state.gearDown?-.42:0;}
     if(visualControls.flapLever){visualControls.flapLever.rotation.z=-state.flaps*.12;}
