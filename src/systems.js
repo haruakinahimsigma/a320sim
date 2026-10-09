@@ -1,22 +1,22 @@
 export class A320Systems {
   constructor() {
     this.state = {
-      ias:145, alt:5000, heading:270, vs:0, pitch:2.2, bank:0,
-      selSpd:150, selHdg:270, selAlt:5000, selVs:0,
+      ias:0, alt:0, heading:0, vs:0, pitch:0, bank:0,
+      selSpd:150, selHdg:0, selAlt:5000, selVs:0,
       ap1:false, ap2:false, fd:true, athr:true,
       gearDown:false, flaps:0, beacon:false, strobe:false,
-      eng1:.55, eng2:.55, apu:0, elec:true,
+      eng1:.20, eng2:.20, apu:0, elec:true,
       hydGreen:true, hydBlue:true, hydYellow:true, parkBrake:true,
-      fuel:100, throttle1:.35, throttle2:.35, trim:0,
-      lightPanel:.7, navMode:'ROSE', mach:.42,
+      fuel:100, throttle1:0, throttle2:0, trim:0,
+      lightPanel:.7, navMode:'ROSE', mach:0,
       rudder:0, elevator:0, aileron:0, spoilers:0,
-      lat:35.55, lon:139.78, onGround:false,
-      radioAlt:4900, gs:145, track:270, nav1:null, nav2:null,
+      lat:35.55, lon:139.78, onGround:true,
+      radioAlt:0, gs:0, track:0, nav1:null, nav2:null,
       ils:false, locDeviation:0, gsDeviation:0, flightPathAngle:0,
       weight:62000, wind:0, oat:15,
-      n1_1:55, n1_2:55, n2_1:68, n2_2:68,
-      egt1:420, egt2:420, fuelFlow1:0.45, fuelFlow2:0.45,
-      oilPress1:72, oilPress2:72, oilTemp1:78, oilTemp2:78
+      n1_1:20, n1_2:20, n2_1:37, n2_2:37,
+      egt1:300, egt2:300, fuelFlow1:0.08, fuelFlow2:0.08,
+      oilPress1:16, oilPress2:16, oilTemp1:62, oilTemp2:62
     };
     this.flightPlan=[
       {ident:'TAKEOFF',lat:35.55,lon:139.78,alt:5000},
