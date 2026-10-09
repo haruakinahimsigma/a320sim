@@ -107,7 +107,7 @@ export function buildCockpit(scene,instruments){
     // speed-brake controls. Use two slim, angled lever lines, not a square base.
     for(const x of [-.024,.024]){
       const lever=new THREE.Group();
-      lever.position.set(x,.39,-.79);
+      lever.position.set(x,.98,-.49); // 59 cm up, 30 cm back
       const shaft=new THREE.Mesh(new THREE.BoxGeometry(.012,.205,.012),metal);
       shaft.position.y=.105;lever.add(shaft);
       const grip=new THREE.Mesh(new THREE.BoxGeometry(.032,.042,.026),dark);
@@ -201,7 +201,7 @@ export function buildCockpit(scene,instruments){
     const t=(state.throttle1+state.throttle2)*.5;
     visualControls.throttleLevers.forEach(lever=>{
       // Idle at 135°, advance smoothly to 45° at TOGA.
-      lever.rotation.z=Math.PI*.25-t*(Math.PI*.5);
+      lever.rotation.z=-Math.PI*.5+Math.PI*.25-t*(Math.PI*.5); // rotate 90° clockwise, retain 135°→45° travel
     });
     if(visualControls.gearLever){visualControls.gearLever.rotation.z=state.gearDown?-.42:0;}
     if(visualControls.flapLever){visualControls.flapLever.rotation.z=-state.flaps*.12;}
