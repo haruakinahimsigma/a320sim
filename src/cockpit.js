@@ -9,10 +9,10 @@ const MODEL_ROTATION_X=-Math.PI/2;
 const DIAGNOSTIC_GRAY=new THREE.MeshStandardMaterial({color:0x62666b,roughness:.82,metalness:.08});
 
 const DISPLAY_POSITIONS={
-  PFD:[-.46,1.31,-.79], ND:[-.46,.91,-.79],
-  ECAM1:[0,1.16,-.80], ECAM2:[0,.79,-.80]
+  PFD:[-.43,1.27,-.48], ND:[-.43,.91,-.48],
+  ECAM1:[0,1.17,-.48], ECAM2:[0,.81,-.48]
 };
-const MCDU_POSITION=[0,.57,-.72];
+const MCDU_POSITION=[0,.57,-.44];
 
 export function buildCockpit(scene,instruments){
   const root=new THREE.Group();
