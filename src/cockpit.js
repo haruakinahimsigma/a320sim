@@ -102,7 +102,7 @@ export function buildCockpit(scene,instruments){
     glareShield.position.set(0,1.40,-1.18);
     diagnostic.add(glareShield);
     // Hide this fallback once the imported cockpit loads successfully.
-    diagnostic.visible=true;
+    diagnostic.visible=false;
   root.add(diagnostic);
 
   const loader=new GLTFLoader();
@@ -149,11 +149,7 @@ export function buildCockpit(scene,instruments){
     }
     diagnostic.visible=false;
 
-    instruments.mount(0,root,DISPLAY_POSITIONS.PFD);
-    instruments.mount(1,root,DISPLAY_POSITIONS.ND);
-    instruments.mount(2,root,DISPLAY_POSITIONS.ECAM1);
-    instruments.mount(3,root,DISPLAY_POSITIONS.ECAM2);
-    mcdu.mount(root,MCDU_POSITION);
+    // Standalone displays and MCDU are disabled to prevent floating panels.
     addInteractionZones();
 
     ready=true;
